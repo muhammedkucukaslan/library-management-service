@@ -15,6 +15,7 @@ import (
 	"github.com/muhammedkucukaslan/library-management-service/app/book"
 	bookcategory "github.com/muhammedkucukaslan/library-management-service/app/book_category"
 	"github.com/muhammedkucukaslan/library-management-service/app/healthcheck"
+	"github.com/muhammedkucukaslan/library-management-service/app/loan"
 	"github.com/muhammedkucukaslan/library-management-service/app/user"
 	"github.com/muhammedkucukaslan/library-management-service/domain"
 	fiberInfra "github.com/muhammedkucukaslan/library-management-service/infra/fiber"
@@ -140,14 +141,15 @@ func main() {
 	createBookCategoryHandler := bookcategory.NewCreateCategoryHandler(repo)
 	deleteBookCategoryHandler := bookcategory.NewDeleteCategoryHandler(repo)
 
+	borrowBookHandler := loan.NewBorrowBookHandler(repo)
+
 	app.Get("/healthcheck", handle[healthcheck.HealthcheckRequest, healthcheck.HealthcheckResponse](healthcheckHandler))
 	app.Use(fiberInfra.ContextMiddleware)
 
 	api := app.Group("/api")
 
-	authApp := api.Group("/auth")
-	authApp.Post("/signup", handle[auth.SignupRequest, auth.SignupResponse](signupHandler))
-	authApp.Post("/login", handle[auth.LoginRequest, auth.LoginResponse](loginHandler))
+	api.Post("/signup", handle[auth.SignupRequest, auth.SignupResponse](signupHandler))
+	api.Post("/login", handle[auth.LoginRequest, auth.LoginResponse](loginHandler))
 
 	api.Use(func(c *fiber.Ctx) error {
 		c.Locals("requireAuth", true)
@@ -172,6 +174,9 @@ func main() {
 	bookCategoriesApp.Post("/", handle[bookcategory.CreateCategoryRequest, bookcategory.CreateCategoryResponse](createBookCategoryHandler))
 	bookCategoriesApp.Delete("/:id", handle[bookcategory.DeleteCategoryRequest, bookcategory.DeleteCategoryResponse](deleteBookCategoryHandler))
 	bookCategoriesApp.Get("/", handle[bookcategory.GetBookCategoriesRequest, bookcategory.GetBookCategoriesResponse](getBookCategoriesHandler))
+
+	loanApp := api.Group("/loans")
+	loanApp.Post("/", handle[loan.BorrowBookRequest, loan.BorrowBookResponse](borrowBookHandler))
 
 	go func() {
 		if err := app.Listen(":3000"); err != nil {
