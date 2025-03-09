@@ -142,7 +142,7 @@ func main() {
 	deleteBookCategoryHandler := bookcategory.NewDeleteCategoryHandler(repo)
 
 	borrowBookHandler := loan.NewBorrowBookHandler(repo)
-
+	returnBookHandler := loan.NewReturnBookHandler(repo)
 	app.Get("/healthcheck", handle[healthcheck.HealthcheckRequest, healthcheck.HealthcheckResponse](healthcheckHandler))
 	app.Use(fiberInfra.ContextMiddleware)
 
@@ -177,6 +177,7 @@ func main() {
 
 	loanApp := api.Group("/loans")
 	loanApp.Post("/", handle[loan.BorrowBookRequest, loan.BorrowBookResponse](borrowBookHandler))
+	loanApp.Post("/return", handle[loan.ReturnBookRequest, loan.ReturnBookResponse](returnBookHandler))
 
 	go func() {
 		if err := app.Listen(":3000"); err != nil {

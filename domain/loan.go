@@ -29,3 +29,12 @@ func NewLoan(bookID, userID int) *Loan {
 func (l *Loan) IsReturned() bool {
 	return l.Status == "RETURNED"
 }
+
+func (l *Loan) IsOverdue() bool {
+	return l.Status == "OVERDUE"
+}
+
+func (l *Loan) Return() {
+	l.Status = "RETURNED"
+	l.ReturnedDate = time.Now()
+}

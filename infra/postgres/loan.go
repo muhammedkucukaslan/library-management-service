@@ -70,3 +70,48 @@ func (r Repository) CheckUserHasAlreadyBorrowed(ctx context.Context, bookID, use
 	return nil
 
 }
+
+func (r Repository) GetLoan(ctx context.Context, loanID int) (*domain.Loan, error) {
+	query := `SELECT id, book_id,  status
+	          FROM loans 
+	          WHERE id = $1`
+
+	row := r.db.QueryRowContext(ctx, query, loanID)
+
+	var loan domain.Loan
+	if err := row.Scan(&loan.ID, &loan.BookID, &loan.Status); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &loan, nil
+}
+
+func (r Repository) UpdateLoan(ctx context.Context, loan *domain.Loan) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	query := `UPDATE loans
+	          SET returned_at = $1, status = $2, updated_at = NOW()
+	          WHERE id = $3`
+	_, err = tx.ExecContext(ctx, query, loan.ReturnedDate, loan.Status, loan.ID)
+	if err != nil {
+		return err
+	}
+
+	updateQuery := `UPDATE book_stocks
+	                SET available_quantity = available_quantity + 1,
+					update_at = NOW()
+	                WHERE book_id = $1`
+	_, err = tx.ExecContext(ctx, updateQuery, loan.BookID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
