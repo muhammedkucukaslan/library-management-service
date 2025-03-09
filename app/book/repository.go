@@ -13,7 +13,6 @@ type Repository interface {
 	GetBook(ctx context.Context, id int) (*GetBookResponse, error)
 	DeleteBook(ctx context.Context, id int) error
 	// GetBooksByCategory(ctx context.Context, categoryID int) ([]*domain.Book, error)
-	// GetCategories(ctx context.Context) ([]*domain.BookCategory, error)
 	// GetCategory(ctx context.Context, id int) (*domain.BookCategory, error)
 	// GetBook(ctx context.Context, id int) (*domain.Book, error)
 }

@@ -136,8 +136,9 @@ func main() {
 	createBookHandler := book.NewCreateBookHandler(repo)
 	deleteBookHandler := book.NewDeleteBookHandler(repo)
 
-	createBookCategory := bookcategory.NewCreateCategoryHandler(repo)
-	deleteBookCategory := bookcategory.NewDeleteCategoryHandler(repo)
+	getBookCategoriesHandler := bookcategory.NewGetBookCategoriesHandler(repo)
+	createBookCategoryHandler := bookcategory.NewCreateCategoryHandler(repo)
+	deleteBookCategoryHandler := bookcategory.NewDeleteCategoryHandler(repo)
 
 	app.Get("/healthcheck", handle[healthcheck.HealthcheckRequest, healthcheck.HealthcheckResponse](healthcheckHandler))
 	app.Use(fiberInfra.ContextMiddleware)
@@ -168,8 +169,9 @@ func main() {
 	booksApp.Delete("/:id", handle[book.DeleteBookRequest, book.DeleteBookResponse](deleteBookHandler))
 
 	bookCategoriesApp := api.Group("/categories")
-	bookCategoriesApp.Post("/", handle[bookcategory.CreateCategoryRequest, bookcategory.CreateCategoryResponse](createBookCategory))
-	bookCategoriesApp.Delete("/:id", handle[bookcategory.DeleteCategoryRequest, bookcategory.DeleteCategoryResponse](deleteBookCategory))
+	bookCategoriesApp.Post("/", handle[bookcategory.CreateCategoryRequest, bookcategory.CreateCategoryResponse](createBookCategoryHandler))
+	bookCategoriesApp.Delete("/:id", handle[bookcategory.DeleteCategoryRequest, bookcategory.DeleteCategoryResponse](deleteBookCategoryHandler))
+	bookCategoriesApp.Get("/", handle[bookcategory.GetBookCategoriesRequest, bookcategory.GetBookCategoriesResponse](getBookCategoriesHandler))
 
 	go func() {
 		if err := app.Listen(":3000"); err != nil {
