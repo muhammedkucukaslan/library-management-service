@@ -9,9 +9,28 @@ import (
 )
 
 func (r *Repository) CreateLoan(ctx context.Context, loan *domain.Loan) error {
-	query := `INSERT INTO loans (book_id, user_id, started_at, due_date) VALUES ($1, $2, $3, $4)`
-	_, err := r.db.ExecContext(ctx, query, loan.BookID, loan.UserID, loan.StartedDate, loan.DueDate)
-	return err
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	insertQuery := `INSERT INTO loans (book_id, user_id, started_at, due_date) 
+	                VALUES ($1, $2, $3, $4)`
+	_, err = tx.ExecContext(ctx, insertQuery, loan.BookID, loan.UserID, loan.StartedDate, loan.DueDate)
+	if err != nil {
+		return err
+	}
+
+	updateQuery := `UPDATE book_stocks 
+	                SET available_quantity = available_quantity - 1 
+	                WHERE book_id = $1`
+	_, err = tx.ExecContext(ctx, updateQuery, loan.BookID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (r *Repository) CheckBookStocks(ctx context.Context, bookID int) (int, error) {
