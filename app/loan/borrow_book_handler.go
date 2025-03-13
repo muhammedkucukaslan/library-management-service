@@ -24,7 +24,11 @@ func NewBorrowBookHandler(repo Repository) *BorrowBookHandler {
 func (h *BorrowBookHandler) Handle(ctx context.Context, req *BorrowBookRequest) (*BorrowBookResponse, error) {
 	userID := domain.GetUserID(ctx)
 
-	// check if user has any punishment
+	// TODO i want to cover here to OOP. im not happy with this implementation
+
+	if err := h.repo.CheckUserHasCurrentPunishment(ctx, userID); err != nil {
+		return nil, err
+	}
 
 	if err := h.repo.CheckUserHasAlreadyBorrowed(ctx, req.BookID, userID); err != nil {
 		return nil, err

@@ -115,3 +115,23 @@ func (r Repository) UpdateLoan(ctx context.Context, loan *domain.Loan) error {
 
 	return tx.Commit()
 }
+
+func (r *Repository) CheckUserHasCurrentPunishment(ctx context.Context, userID int) error {
+	query := `SELECT EXISTS (
+			SELECT 1 
+			FROM punishments p 
+			WHERE p.user_id = $1 
+			  AND p.end_date > NOW()
+		  );`
+
+	var exists bool
+	err := r.db.QueryRowContext(ctx, query, userID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return fmt.Errorf("user has current punishment")
+	}
+	return nil
+}
