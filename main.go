@@ -22,6 +22,7 @@ import (
 	fiberInfra "github.com/muhammedkucukaslan/library-management-service/infra/fiber"
 	"github.com/muhammedkucukaslan/library-management-service/infra/jwt"
 	"github.com/muhammedkucukaslan/library-management-service/infra/postgres"
+	"github.com/robfig/cron/v3"
 )
 
 type Request any
@@ -122,6 +123,12 @@ func main() {
 	tokenService := jwt.NewTokenService(os.Getenv("JWT_SECRET_KEY"), time.Hour*24)
 	cookieService := fiberInfra.NewFiberCookieService()
 
+	c := cron.New()
+
+	punishmentCronJob := punishment.NewPunishLoanCronJob(repo)
+	c.AddFunc("@every 5m", punishmentCronJob.Execute)
+	c.Start()
+
 	healthcheckHandler := healthcheck.NewHealthcheckHandler()
 
 	signupHandler := auth.NewSignupHandler(repo, tokenService, cookieService)
@@ -191,7 +198,6 @@ func main() {
 			fmt.Printf("Failed to start server: %v\n", err)
 		}
 	}()
-
 	gracefulShutdown(app)
 }
 
