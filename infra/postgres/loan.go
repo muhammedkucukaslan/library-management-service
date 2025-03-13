@@ -15,9 +15,9 @@ func (r *Repository) CreateLoan(ctx context.Context, loan *domain.Loan) error {
 	}
 	defer tx.Rollback()
 
-	insertQuery := `INSERT INTO loans (book_id, user_id, started_at, due_date) 
+	insertQuery := `INSERT INTO loans (book_id, user_id, started_at, due_at) 
 	                VALUES ($1, $2, $3, $4)`
-	_, err = tx.ExecContext(ctx, insertQuery, loan.BookID, loan.UserID, loan.StartedDate, loan.DueDate)
+	_, err = tx.ExecContext(ctx, insertQuery, loan.BookID, loan.UserID, loan.StartedAt, loan.DueAt)
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (r Repository) UpdateLoan(ctx context.Context, loan *domain.Loan) error {
 	query := `UPDATE loans
 	          SET returned_at = $1, status = $2, updated_at = NOW()
 	          WHERE id = $3`
-	_, err = tx.ExecContext(ctx, query, loan.ReturnedDate, loan.Status, loan.ID)
+	_, err = tx.ExecContext(ctx, query, loan.ReturnedAt, loan.Status, loan.ID)
 	if err != nil {
 		return err
 	}
