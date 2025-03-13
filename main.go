@@ -182,7 +182,7 @@ func main() {
 
 	loanApp := api.Group("/loans")
 	loanApp.Post("/", handle[loan.BorrowBookRequest, loan.BorrowBookResponse](borrowBookHandler))
-	loanApp.Post("/return", handle[loan.ReturnBookRequest, loan.ReturnBookResponse](returnBookHandler))
+	loanApp.Post("/:id/return", handle[loan.ReturnBookRequest, loan.ReturnBookResponse](returnBookHandler))
 
 	go func() {
 		if err := app.Listen(":3000"); err != nil {
