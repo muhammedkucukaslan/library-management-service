@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/muhammedkucukaslan/library-management-service/app/loan"
 	"github.com/muhammedkucukaslan/library-management-service/domain"
 )
 
@@ -134,4 +135,44 @@ func (r *Repository) CheckUserHasCurrentPunishment(ctx context.Context, userID i
 		return fmt.Errorf("user has current punishment")
 	}
 	return nil
+}
+
+func (r *Repository) GetAllLoans(ctx context.Context) (*loan.GetLoansResponse, error) {
+	query := `select * from loans`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var loans loan.GetLoansResponse
+	for rows.Next() {
+		var l loan.Loan
+		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &l.ReturnedAt, &l.Status); err != nil {
+			return nil, err
+		}
+		loans = append(loans, l)
+	}
+	return &loans, nil
+}
+
+func (r *Repository) GetUserLoans(ctx context.Context, userID int) (*loan.GetLoansResponse, error) {
+	query := `select * from loans WHERE user_id = $1`
+
+	rows, err := r.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var loans loan.GetLoansResponse
+	for rows.Next() {
+		var l loan.Loan
+		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &l.ReturnedAt, &l.Status); err != nil {
+			return nil, err
+		}
+		loans = append(loans, l)
+	}
+	return &loans, nil
 }

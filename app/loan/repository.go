@@ -13,4 +13,6 @@ type Repository interface {
 	CheckUserHasAlreadyBorrowed(ctx context.Context, bookID, userID int) error
 	CheckUserHasCurrentPunishment(ctx context.Context, userID int) error
 	UpdateLoan(ctx context.Context, loan *domain.Loan) error
+	GetAllLoans(ctx context.Context) (*GetLoansResponse, error)
+	GetUserLoans(ctx context.Context, userID int) (*GetLoansResponse, error)
 }

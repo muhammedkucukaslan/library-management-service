@@ -144,6 +144,7 @@ func main() {
 
 	borrowBookHandler := loan.NewBorrowBookHandler(repo)
 	returnBookHandler := loan.NewReturnBookHandler(repo)
+	getLoansHandler := loan.NewGetLoanHandler(repo)
 
 	punishUserHandler := punishment.NewPunishUserHandler(repo)
 
@@ -182,6 +183,7 @@ func main() {
 
 	loanApp := api.Group("/loans")
 	loanApp.Post("/", handle[loan.BorrowBookRequest, loan.BorrowBookResponse](borrowBookHandler))
+	loanApp.Get("/", handle[loan.GetLoansRequest, loan.GetLoansResponse](getLoansHandler))
 	loanApp.Post("/:id/return", handle[loan.ReturnBookRequest, loan.ReturnBookResponse](returnBookHandler))
 
 	go func() {
