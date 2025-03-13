@@ -16,6 +16,7 @@ import (
 	bookCategory "github.com/muhammedkucukaslan/library-management-service/app/book_category"
 	"github.com/muhammedkucukaslan/library-management-service/app/healthcheck"
 	"github.com/muhammedkucukaslan/library-management-service/app/loan"
+	"github.com/muhammedkucukaslan/library-management-service/app/punishment"
 	"github.com/muhammedkucukaslan/library-management-service/app/user"
 	"github.com/muhammedkucukaslan/library-management-service/domain"
 	fiberInfra "github.com/muhammedkucukaslan/library-management-service/infra/fiber"
@@ -143,6 +144,9 @@ func main() {
 
 	borrowBookHandler := loan.NewBorrowBookHandler(repo)
 	returnBookHandler := loan.NewReturnBookHandler(repo)
+
+	punishUserHandler := punishment.NewPunishUserHandler(repo)
+
 	app.Get("/healthcheck", handle[healthcheck.HealthcheckRequest, healthcheck.HealthcheckResponse](healthcheckHandler))
 	app.Use(fiberInfra.ContextMiddleware)
 
@@ -160,6 +164,7 @@ func main() {
 	usersApp.Get("/:id", handle[user.GetUserRequest, user.GetUserResponse](getUserHandler))
 	usersApp.Delete("/:id", handle[user.DeleteUserRequest, user.DeleteUserResponse](deleteUserHandler))
 	usersApp.Put("/:id", handle[user.UpdateUserRequest, user.UpdateUserResponse](updateUserHandler))
+	usersApp.Post("/:id/punish", handle[punishment.PunishUserRequest, punishment.PunishUserResponse](punishUserHandler))
 
 	authorsApp := api.Group("/authors")
 	authorsApp.Post("/", handle[author.CreateAuthorRequest, author.CreateAuthorResponse](createAuthorHandler))
