@@ -149,8 +149,12 @@ func (r *Repository) GetAllLoans(ctx context.Context) (*loan.GetLoansResponse, e
 	var loans loan.GetLoansResponse
 	for rows.Next() {
 		var l loan.Loan
-		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &l.ReturnedAt, &l.Status); err != nil {
+		var returnedAt sql.NullTime
+		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &returnedAt, &l.Status); err != nil {
 			return nil, err
+		}
+		if returnedAt.Valid {
+			l.ReturnedAt = returnedAt.Time
 		}
 		loans = append(loans, l)
 	}
@@ -169,8 +173,12 @@ func (r *Repository) GetUserLoans(ctx context.Context, userID int) (*loan.GetLoa
 	var loans loan.GetLoansResponse
 	for rows.Next() {
 		var l loan.Loan
-		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &l.ReturnedAt, &l.Status); err != nil {
+		var returnedAt sql.NullTime
+		if err := rows.Scan(&l.ID, &l.UserID, &l.BookID, &l.StartedAt, &l.DueAt, &returnedAt, &l.Status); err != nil {
 			return nil, err
+		}
+		if returnedAt.Valid {
+			l.ReturnedAt = returnedAt.Time
 		}
 		loans = append(loans, l)
 	}
