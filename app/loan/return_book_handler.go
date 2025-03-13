@@ -6,7 +6,7 @@ import (
 )
 
 type ReturnBookRequest struct {
-	LoanID int `json:"loan_id" param:"loan_id"`
+	LoanID int `json:"id" params:"id"`
 }
 
 type ReturnBookResponse struct{}
@@ -20,6 +20,7 @@ func NewReturnBookHandler(repo Repository) *ReturnBookHandler {
 }
 
 func (h *ReturnBookHandler) Handle(ctx context.Context, req *ReturnBookRequest) (*ReturnBookResponse, error) {
+
 	loan, err := h.repo.GetLoan(ctx, req.LoanID)
 	if err != nil {
 		return nil, err

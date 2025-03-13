@@ -97,7 +97,7 @@ func (r Repository) UpdateLoan(ctx context.Context, loan *domain.Loan) error {
 	defer tx.Rollback()
 
 	query := `UPDATE loans
-	          SET returned_at = $1, status = $2, updated_at = NOW()
+	          SET returned_at = $1, status = $2
 	          WHERE id = $3`
 	_, err = tx.ExecContext(ctx, query, loan.ReturnedAt, loan.Status, loan.ID)
 	if err != nil {
@@ -106,7 +106,7 @@ func (r Repository) UpdateLoan(ctx context.Context, loan *domain.Loan) error {
 
 	updateQuery := `UPDATE book_stocks
 	                SET available_quantity = available_quantity + 1,
-					update_at = NOW()
+					updated_at = NOW()
 	                WHERE book_id = $1`
 	_, err = tx.ExecContext(ctx, updateQuery, loan.BookID)
 	if err != nil {
@@ -121,7 +121,7 @@ func (r *Repository) CheckUserHasCurrentPunishment(ctx context.Context, userID i
 			SELECT 1 
 			FROM punishments p 
 			WHERE p.user_id = $1 
-			  AND p.end_date > NOW()
+			  AND p.end_at > NOW()
 		  );`
 
 	var exists bool
