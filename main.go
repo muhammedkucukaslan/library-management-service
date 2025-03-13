@@ -13,7 +13,7 @@ import (
 	"github.com/muhammedkucukaslan/library-management-service/app/auth"
 	"github.com/muhammedkucukaslan/library-management-service/app/author"
 	"github.com/muhammedkucukaslan/library-management-service/app/book"
-	bookcategory "github.com/muhammedkucukaslan/library-management-service/app/book_category"
+	bookCategory "github.com/muhammedkucukaslan/library-management-service/app/book_category"
 	"github.com/muhammedkucukaslan/library-management-service/app/healthcheck"
 	"github.com/muhammedkucukaslan/library-management-service/app/loan"
 	"github.com/muhammedkucukaslan/library-management-service/app/user"
@@ -137,9 +137,9 @@ func main() {
 	createBookHandler := book.NewCreateBookHandler(repo)
 	deleteBookHandler := book.NewDeleteBookHandler(repo)
 
-	getBookCategoriesHandler := bookcategory.NewGetBookCategoriesHandler(repo)
-	createBookCategoryHandler := bookcategory.NewCreateCategoryHandler(repo)
-	deleteBookCategoryHandler := bookcategory.NewDeleteCategoryHandler(repo)
+	getBookCategoriesHandler := bookCategory.NewGetBookCategoriesHandler(repo)
+	createBookCategoryHandler := bookCategory.NewCreateCategoryHandler(repo)
+	deleteBookCategoryHandler := bookCategory.NewDeleteCategoryHandler(repo)
 
 	borrowBookHandler := loan.NewBorrowBookHandler(repo)
 	returnBookHandler := loan.NewReturnBookHandler(repo)
@@ -171,9 +171,9 @@ func main() {
 	booksApp.Delete("/:id", handle[book.DeleteBookRequest, book.DeleteBookResponse](deleteBookHandler))
 
 	bookCategoriesApp := api.Group("/categories")
-	bookCategoriesApp.Post("/", handle[bookcategory.CreateCategoryRequest, bookcategory.CreateCategoryResponse](createBookCategoryHandler))
-	bookCategoriesApp.Delete("/:id", handle[bookcategory.DeleteCategoryRequest, bookcategory.DeleteCategoryResponse](deleteBookCategoryHandler))
-	bookCategoriesApp.Get("/", handle[bookcategory.GetBookCategoriesRequest, bookcategory.GetBookCategoriesResponse](getBookCategoriesHandler))
+	bookCategoriesApp.Post("/", handle[bookCategory.CreateCategoryRequest, bookCategory.CreateCategoryResponse](createBookCategoryHandler))
+	bookCategoriesApp.Delete("/:id", handle[bookCategory.DeleteCategoryRequest, bookCategory.DeleteCategoryResponse](deleteBookCategoryHandler))
+	bookCategoriesApp.Get("/", handle[bookCategory.GetBookCategoriesRequest, bookCategory.GetBookCategoriesResponse](getBookCategoriesHandler))
 
 	loanApp := api.Group("/loans")
 	loanApp.Post("/", handle[loan.BorrowBookRequest, loan.BorrowBookResponse](borrowBookHandler))
