@@ -55,7 +55,7 @@ func (r Repository) CheckUserHasAlreadyBorrowed(ctx context.Context, bookID, use
 			FROM loans l 
 			WHERE l.user_id = $1 
 			  AND l.book_id = $2 
-			  AND l.status != 'RETURNED'
+			  AND l.status == 'BORROWED'
 		  );`
 
 	var exists bool
