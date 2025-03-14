@@ -22,6 +22,7 @@ import (
 	fiberInfra "github.com/muhammedkucukaslan/library-management-service/infra/fiber"
 	"github.com/muhammedkucukaslan/library-management-service/infra/jwt"
 	"github.com/muhammedkucukaslan/library-management-service/infra/postgres"
+	resendInfra "github.com/muhammedkucukaslan/library-management-service/infra/resend"
 	"github.com/robfig/cron/v3"
 )
 
@@ -131,7 +132,9 @@ func main() {
 
 	healthcheckHandler := healthcheck.NewHealthcheckHandler()
 
-	signupHandler := auth.NewSignupHandler(repo, tokenService, cookieService)
+	resendEmailService := resendInfra.NewResendEmailService(os.Getenv("RESEND_API_KEY"))
+
+	signupHandler := auth.NewSignupHandler(repo, tokenService, cookieService, resendEmailService)
 	loginHandler := auth.NewLoginHandler(repo, tokenService, cookieService)
 
 	getUserHandler := user.NewGetUserHandler(repo)
