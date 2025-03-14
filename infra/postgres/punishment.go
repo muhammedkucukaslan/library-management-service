@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/muhammedkucukaslan/library-management-service/app/punishment"
 	"github.com/muhammedkucukaslan/library-management-service/domain"
 )
@@ -45,8 +46,6 @@ func (r *Repository) PunishOverdueLoans(ctx context.Context) ([]int, error) {
 		overdueLoans = append(overdueLoans, loan)
 	}
 
-	fmt.Println(overdueLoans)
-
 	for _, loan := range overdueLoans {
 		_, err := tx.ExecContext(ctx, "UPDATE loans SET status = 'OVERDUE' WHERE id = $1", loan.LoanID)
 		if err != nil {
@@ -72,4 +71,26 @@ func (r *Repository) PunishOverdueLoans(ctx context.Context) ([]int, error) {
 	}
 
 	return userIDs, nil
+}
+
+func (r *Repository) GetPunishedUserEmails(ctx context.Context, userIDs []int) ([]string, error) {
+	query := `SELECT email FROM users WHERE id = ANY($1)`
+
+	rows, err := r.db.QueryContext(ctx, query, pq.Array(userIDs))
+	if err != nil {
+		return nil, err
+	}
+
+	var emails []string
+	if rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			return nil, err
+		}
+
+		emails = append(emails, email)
+	}
+
+	return emails, nil
+
 }

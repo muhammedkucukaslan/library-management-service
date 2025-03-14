@@ -123,16 +123,15 @@ func main() {
 
 	tokenService := jwt.NewTokenService(os.Getenv("JWT_SECRET_KEY"), time.Hour*24)
 	cookieService := fiberInfra.NewFiberCookieService()
+	resendEmailService := resendInfra.NewResendEmailService(os.Getenv("RESEND_API_KEY"))
 
 	c := cron.New()
 
-	punishmentCronJob := punishment.NewPunishLoanCronJob(repo)
+	punishmentCronJob := punishment.NewPunishLoanCronJob(repo, resendEmailService)
 	c.AddFunc("@every 5m", punishmentCronJob.Execute)
 	c.Start()
 
 	healthcheckHandler := healthcheck.NewHealthcheckHandler()
-
-	resendEmailService := resendInfra.NewResendEmailService(os.Getenv("RESEND_API_KEY"))
 
 	signupHandler := auth.NewSignupHandler(repo, tokenService, cookieService, resendEmailService)
 	loginHandler := auth.NewLoginHandler(repo, tokenService, cookieService)

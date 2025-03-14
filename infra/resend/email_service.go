@@ -24,3 +24,17 @@ func (s *ResendEmailService) SendWelcomeEmail(from, to, subject, html string) er
 	_, err := client.Emails.Send(params)
 	return err
 }
+
+func (s *ResendEmailService) SendPunishmentEmails(from string, emails []string, subject, html string) error {
+	client := resend.NewClient(s.apiKey)
+
+	params := &resend.SendEmailRequest{
+		From:    from,
+		To:      emails,
+		Subject: subject,
+		Html:    html,
+	}
+
+	_, err := client.Emails.Send(params)
+	return err
+}
