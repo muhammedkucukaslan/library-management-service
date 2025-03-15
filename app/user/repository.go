@@ -11,4 +11,6 @@ type Repository interface {
 	CheckEmail(ctx context.Context, email string) error
 	DeleteUser(ctx context.Context, id int) error
 	UpdateUser(ctx context.Context, user *domain.User) error
+	GetUserPunishments(ctx context.Context, id int) ([]Punishment, error)
+	GetCurrentUserLoans(ctx context.Context, id int) ([]Loan, error)
 }

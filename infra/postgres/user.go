@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
+	"github.com/muhammedkucukaslan/library-management-service/app/user"
 	"github.com/muhammedkucukaslan/library-management-service/domain"
 )
 
@@ -106,4 +107,73 @@ func (r *Repository) CheckEmail(ctx context.Context, email string) error {
 		return err
 	}
 	return errors.New("email already exists")
+}
+
+func (r *Repository) GetUserPunishments(ctx context.Context, id int) ([]user.Punishment, error) {
+	query := ` SELECT id, created_at, end_at, reason FROM punishments WHERE user_id = $1`
+	rows, err := r.db.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var punishments []user.Punishment
+	for rows.Next() {
+		var punishment user.Punishment
+		err := rows.Scan(&punishment.ID, &punishment.StartedAt, &punishment.EndedAt, &punishment.Reason)
+		if err != nil {
+			return nil, err
+		}
+		punishments = append(punishments, punishment)
+	}
+	return punishments, nil
+}
+
+func (r *Repository) GetCurrentUserLoans(ctx context.Context, id int) ([]user.Loan, error) {
+	query := `SELECT
+    l.id,
+    l.started_at,
+    l.due_at,
+    COALESCE(l.returned_at, '0001-01-01 00:00:00') AS returned_at,
+    l.status,
+    b.id AS book_id,
+    b.isbn,
+    b.title,
+    (
+        SELECT
+            CONCAT (a.first_name, ' ', a.second_name)
+        FROM
+            authors a
+        WHERE
+            a.id = b.author_id
+    ) AS author,
+    (
+        SELECT
+            c.title
+        FROM
+            categories c
+            join book_categories bc on b.id = bc.book_id AND bc.category_id = c.id
+    ) AS category
+FROM
+    loans l
+    JOIN books b ON l.book_id = b.id
+WHERE
+    l.user_id = $1 `
+	rows, err := r.db.QueryContext(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var loans []user.Loan
+	for rows.Next() {
+		var loan user.Loan
+		err := rows.Scan(&loan.ID, &loan.StartedAt, &loan.DueAt, &loan.ReturnedAt, &loan.Status, &loan.Book.ID, &loan.Book.ISBN, &loan.Book.Title, &loan.Book.Author, &loan.Book.Category)
+		if err != nil {
+			return nil, err
+		}
+
+		loans = append(loans, loan)
+	}
+	return loans, nil
 }

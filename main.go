@@ -139,6 +139,7 @@ func main() {
 	getUserHandler := user.NewGetUserHandler(repo)
 	deleteUserHandler := user.NewDeleteUserHandler(repo)
 	updateUserHandler := user.NewUpdateUserHandler(repo)
+	getCurrentUserHandler := user.NewGetCurrentUserHandler(repo)
 
 	createAuthorHandler := author.NewCreateAuthorHandler(repo)
 	deleteAuthorHandler := author.NewDeleteAuthorHandler(repo)
@@ -171,6 +172,7 @@ func main() {
 	}, authMiddleware)
 
 	usersApp := api.Group("/users")
+	usersApp.Get("/me", handle[user.GetCurrentUserRequest, user.GetCurrentUserResponse](getCurrentUserHandler))
 	usersApp.Get("/:id", handle[user.GetUserRequest, user.GetUserResponse](getUserHandler))
 	usersApp.Delete("/:id", handle[user.DeleteUserRequest, user.DeleteUserResponse](deleteUserHandler))
 	usersApp.Put("/:id", handle[user.UpdateUserRequest, user.UpdateUserResponse](updateUserHandler))
