@@ -1,0 +1,75 @@
+library-management-service/
+├─ app/
+│  ├─ auth/
+│  │  ├─ cookie_service.go
+│  │  ├─ email_service.go
+│  │  ├─ login_handler.go
+│  │  ├─ repository.go
+│  │  ├─ signup_handler.go
+│  │  └─ token_service.go
+│  ├─ author/
+│  │  ├─ create_author_handler.go
+│  │  ├─ delete_author_handler.go
+│  │  └─ repository.go
+│  ├─ book/
+│  │  ├─ create_book_handler.go
+│  │  ├─ delete_book_handler.go
+│  │  ├─ get_book_handler.go
+│  │  ├─ get_books_handler.go
+│  │  └─ repository.go
+│  ├─ book_category/
+│  │  ├─ create_category_handler.go
+│  │  ├─ delete_category_handler.go
+│  │  ├─ get_book_categories.go
+│  │  └─ repository.go
+│  ├─ healthcheck/
+│  │  └─ healthcheck.go
+│  ├─ loan/
+│  │  ├─ borrow_book_handler.go
+│  │  ├─ get_loans_handler.go
+│  │  ├─ repository.go
+│  │  └─ return_book_handler.go
+│  ├─ punishment/
+│  │  ├─ email_service.go
+│  │  ├─ punish_loan_cron_job.go
+│  │  ├─ punish_user_handler.go
+│  │  └─ repository.go
+│  └─ user/
+│     ├─ delete_user_handler.go
+│     ├─ get_current_user_handler.go
+│     ├─ get_user_handler.go
+│     ├─ repository.go
+│     └─ update_user_handler.go
+├─ domain/
+│  ├─ author.go
+│  ├─ book_category.go
+│  ├─ book.go
+│  ├─ context.go
+│  ├─ loan.go
+│  ├─ permission.go
+│  ├─ punishment.go
+│  └─ user.go
+├─ infra/
+│  ├─ fiber/
+│  │  ├─ cookie_service.go
+│  │  └─ middleware.go
+│  ├─ jwt/
+│  │  └─ service.go
+│  ├─ postgres/
+│  │  ├─ author.go
+│  │  ├─ book_category.go
+│  │  ├─ book.go
+│  │  ├─ loan.go
+│  │  ├─ punishment.go
+│  │  ├─ repository.go
+│  │  └─ user.go
+│  └─ resend/
+│     └─ email_service.go
+├─ sql/
+│  ├─ data.sql
+│  └─ init.sql
+├─ .gitignore
+├─ go.mod
+├─ go.sum
+├─ main.go
+└─ README.md
