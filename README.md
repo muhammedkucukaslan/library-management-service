@@ -64,7 +64,9 @@ You can prefer any database and email service provider. In order to do that,you 
    RESEND_API_KEY=your_resend_api_key
    EMAIL_SERVICE_DOMAIN=domain@example.com
     ```
-5. Build and run the application (be sure PostgreSQL running)
+5. Use `init.sql` and `data.sql` files in your database
+
+6. Build and run the application (be sure PostgreSQL running)
    ```sh
    go build -o library-api
    ./library-api
