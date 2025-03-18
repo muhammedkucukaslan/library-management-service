@@ -81,3 +81,154 @@ func (r *Repository) DeleteBook(ctx context.Context, id int) error {
 
 	return err
 }
+
+func (r *Repository) GetAllBooks(ctx context.Context, page, limit int) (*book.GetBooksResponse, error) {
+	query := `SELECT
+	b.id,
+	b.title,
+	(
+		SELECT
+			CONCAT (a.first_name, ' ', a.second_name)
+		FROM
+			authors a
+		WHERE
+			a.id = b.author_id
+	) AS author,
+	(
+		SELECT
+			c.title
+		FROM
+			categories c
+			JOIN book_categories bc ON bc.category_id = c.id
+		WHERE
+			bc.book_id = b.id
+		LIMIT
+			1
+	) AS category,
+	b.publisher,
+	b.description
+	FROM books b
+	OFFSET $1 LIMIT $2`
+
+	if limit == 0 {
+		limit = 10
+	}
+
+	if page == 0 {
+		page = 1
+	}
+
+	rows, err := r.db.QueryContext(ctx, query, (page-1)*limit, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var books book.GetBooksResponse
+	for rows.Next() {
+		var book book.Book
+		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Category, &book.Publisher, &book.Description)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return &books, nil
+}
+
+func (r *Repository) GetBooksByAuthor(ctx context.Context, authorID int) (*book.GetBooksResponse, error) {
+	query := `SELECT
+	b.id,
+	b.title,
+	(
+		SELECT
+			CONCAT (a.first_name, ' ', a.second_name)
+		FROM
+			authors a
+		WHERE
+			a.id = b.author_id
+	) AS author,
+	(
+		SELECT
+			c.title
+		FROM
+			categories c
+			JOIN book_categories bc ON bc.category_id = c.id
+		WHERE
+			bc.book_id = b.id
+		LIMIT
+			1
+	) AS category,
+	b.publisher,
+	b.description
+	FROM books b
+	WHERE b.author_id = $1`
+
+	rows, err := r.db.QueryContext(ctx, query, authorID)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var books book.GetBooksResponse
+	for rows.Next() {
+		var book book.Book
+		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Category, &book.Publisher, &book.Description)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return &books, nil
+}
+
+func (r *Repository) GetBooksByCategory(ctx context.Context, categoryID int) (*book.GetBooksResponse, error) {
+	query := `SELECT
+	b.id,
+	b.title,
+	(
+		SELECT
+			CONCAT (a.first_name, ' ', a.second_name)
+		FROM
+			authors a
+		WHERE
+			a.id = b.author_id
+	) AS author,
+	(
+		SELECT
+			c.title
+		FROM
+			categories c
+			JOIN book_categories bc ON bc.category_id = c.id
+		WHERE
+			bc.book_id = b.id
+		LIMIT
+			1
+	) AS category,
+	b.publisher,
+	b.description
+	FROM books b
+	JOIN book_categories bc ON bc.book_id = b.id
+	WHERE bc.category_id = $1`
+
+	rows, err := r.db.QueryContext(ctx, query, categoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var books book.GetBooksResponse
+	for rows.Next() {
+		var book book.Book
+		err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Category, &book.Publisher, &book.Description)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return &books, nil
+
+}

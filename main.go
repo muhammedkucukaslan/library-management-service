@@ -144,6 +144,7 @@ func main() {
 	createAuthorHandler := author.NewCreateAuthorHandler(repo)
 	deleteAuthorHandler := author.NewDeleteAuthorHandler(repo)
 
+	getBooksHandler := book.NewGetBooksHandler(repo)
 	getBookHandler := book.NewGetBookHandler(repo)
 	createBookHandler := book.NewCreateBookHandler(repo)
 	deleteBookHandler := book.NewDeleteBookHandler(repo)
@@ -184,6 +185,7 @@ func main() {
 
 	booksApp := api.Group("/books")
 	booksApp.Post("/", handle[book.CreateBookRequest, book.CreateBookResponse](createBookHandler))
+	booksApp.Get("/", handle[book.GetBooksRequest, book.GetBooksResponse](getBooksHandler))
 	booksApp.Get("/:id", handle[book.GetBookRequest, book.GetBookResponse](getBookHandler))
 	booksApp.Delete("/:id", handle[book.DeleteBookRequest, book.DeleteBookResponse](deleteBookHandler))
 
