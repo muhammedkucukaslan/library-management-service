@@ -9,7 +9,7 @@
 </p>
 
 ## About The Project
-This project simplifies library management with RESTful API. Built with Go, it includes user authentication, role-based access control, email notifications, and streamlined book borrowing and returning.
+This project simplifies library management with RESTful API. Built with Go, it includes user authentication, role-based access control, email notifications, cron job operations and streamlined book borrowing and returning.
 
 ## Features
 
@@ -17,6 +17,8 @@ This project simplifies library management with RESTful API. Built with Go, it i
 - **Custom Authentication System:** Secure user authentication with JWT-based token management from scratch.
 - **Email Notifications:** User gets email while signing up and getting punished.
 - **Book Borrowing and Returning:** Seamless workflows for managing book loans and returns.
+- **Cron Jobs:** Checks user overdue loans for every 15 minutes and makes database operations periodicly.
+
 
 ### Built With
 
@@ -64,6 +66,7 @@ You can prefer any database and email service provider. In order to do that,you 
    RESEND_API_KEY=your_resend_api_key
    EMAIL_SERVICE_DOMAIN=domain@example.com
     ```
+
 5. Use `init.sql` and `data.sql` files in your database
 
 6. Build and run the application (be sure PostgreSQL running)
@@ -71,8 +74,6 @@ You can prefer any database and email service provider. In order to do that,you 
    go build -o library-api
    ./library-api
    ```
-
-
 
 ## Database Schema
 
